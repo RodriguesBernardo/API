@@ -1,0 +1,249 @@
+{
+  "info": {
+    "name": "API Feriados BR",
+    "description": "Coleção de testes da API de feriados brasileiros (nacional, estadual, municipal, ponto facultativo).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+      }
+    },
+    {
+      "name": "Feriado nacional (Ano Novo 2026)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-01-01",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [{ "key": "data", "value": "2026-01-01" }]
+        }
+      }
+    },
+    {
+      "name": "Dia comum (não feriado)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-01-05",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [{ "key": "data", "value": "2026-01-05" }]
+        }
+      }
+    },
+    {
+      "name": "Ponto facultativo (Carnaval 2026)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-02-16",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [{ "key": "data", "value": "2026-02-16" }]
+        }
+      }
+    },
+    {
+      "name": "Feriado estadual (RS, 20/09 - Revolução Farroupilha)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-09-20&uf=RS",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [
+            { "key": "data", "value": "2026-09-20" },
+            { "key": "uf", "value": "RS" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Feriado estadual RS em outra UF (não deve aparecer)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-09-20&uf=SC",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [
+            { "key": "data", "value": "2026-09-20" },
+            { "key": "uf", "value": "SC" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Feriado municipal por código IBGE (Porto Alegre, 02/02)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-02-02&uf=RS&municipio=4314902",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [
+            { "key": "data", "value": "2026-02-02" },
+            { "key": "uf", "value": "RS" },
+            { "key": "municipio", "value": "4314902" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Feriado municipal por nome (Porto Alegre, 02/02)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-02-02&uf=RS&municipio=Porto Alegre",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [
+            { "key": "data", "value": "2026-02-02" },
+            { "key": "uf", "value": "RS" },
+            { "key": "municipio", "value": "Porto Alegre" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Feriado municipal em outro município RS (não deve aparecer)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-02-02&uf=RS&municipio=Caxias do Sul",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [
+            { "key": "data", "value": "2026-02-02" },
+            { "key": "uf", "value": "RS" },
+            { "key": "municipio", "value": "Caxias do Sul" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Lista de feriados do ano (RS)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriados/2026?uf=RS",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriados", "2026"],
+          "query": [{ "key": "uf", "value": "RS" }]
+        }
+      }
+    },
+    {
+      "name": "Lista de feriados do ano (Porto Alegre)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriados/2026?uf=RS&municipio=4314902",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriados", "2026"],
+          "query": [
+            { "key": "uf", "value": "RS" },
+            { "key": "municipio", "value": "4314902" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Lista de estados",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/estados", "host": ["{{baseUrl}}"], "path": ["estados"] }
+      }
+    },
+    {
+      "name": "Lista de municípios (RS)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/municipios?uf=RS",
+          "host": ["{{baseUrl}}"],
+          "path": ["municipios"],
+          "query": [{ "key": "uf", "value": "RS" }]
+        }
+      }
+    },
+    {
+      "name": "Erro - data inválida",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-13-40",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [{ "key": "data", "value": "2026-13-40" }]
+        }
+      }
+    },
+    {
+      "name": "Erro - ano fora do intervalo",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2030-01-01",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [{ "key": "data", "value": "2030-01-01" }]
+        }
+      }
+    },
+    {
+      "name": "Erro - UF inválida",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-01-01&uf=XX",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [
+            { "key": "data", "value": "2026-01-01" },
+            { "key": "uf", "value": "XX" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Erro - município sem UF",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-01-01&municipio=Caxias do Sul",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [
+            { "key": "data", "value": "2026-01-01" },
+            { "key": "municipio", "value": "Caxias do Sul" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Erro - município de UF errada (Porto Alegre em SC)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/feriado?data=2026-01-01&uf=SC&municipio=4314902",
+          "host": ["{{baseUrl}}"],
+          "path": ["feriado"],
+          "query": [
+            { "key": "data", "value": "2026-01-01" },
+            { "key": "uf", "value": "SC" },
+            { "key": "municipio", "value": "4314902" }
+          ]
+        }
+      }
+    }
+  ]
+}

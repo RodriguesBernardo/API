@@ -1,0 +1,3 @@
+[submodule "feriados-brasil"]
+	path = feriados-brasil
+	url = https://github.com/joaopbini/feriados-brasil.git

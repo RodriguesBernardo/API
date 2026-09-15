@@ -1,0 +1,15 @@
+{
+  "name": "api-feriados-br",
+  "version": "1.0.0",
+  "description": "API de feriados brasileiros (nacional, estadual, municipal e ponto facultativo)",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
