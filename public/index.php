@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+require __DIR__ . '/../src/config.php';
 require __DIR__ . '/../src/data/Paths.php';
 require __DIR__ . '/../src/lib/Normalize.php';
 require __DIR__ . '/../src/lib/Datas.php';
@@ -25,6 +26,11 @@ if ($basePath !== '' && strpos($path, $basePath) === 0) {
 }
 if ($path === '') {
     $path = '/';
+}
+
+if (!hash_equals(API_TOKEN, (string) ($_GET['token'] ?? ''))) {
+    responderJson(401, ['erro' => "Token inválido ou ausente."]);
+    return;
 }
 
 try {

@@ -4,8 +4,17 @@
     "description": "Coleção de testes da API de feriados brasileiros (nacional, estadual, municipal, ponto facultativo).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      { "key": "key", "value": "token" },
+      { "key": "value", "value": "{{token}}" },
+      { "key": "in", "value": "query" }
+    ]
+  },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:85/API" }
+    { "key": "baseUrl", "value": "http://localhost:85/API" },
+    { "key": "token", "value": "MU7tmUw0JivhBf6eA3IL5QtO3" }
   ],
   "item": [
     {

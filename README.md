@@ -45,9 +45,17 @@ Testar rápido se subiu:
 curl http://localhost:85/API/health
 ```
 
+## Autenticação
+
+Todas as rotas exigem o parâmetro `?token=SEU_TOKEN` na URL. O token padrão fica em `src/config.php` (constante `API_TOKEN`) — troque o valor lá, ou defina a variável de ambiente `API_TOKEN` para sobrescrever sem editar o código. Requisição sem token ou com token errado retorna `401`.
+
+```bash
+curl "http://localhost:85/API/health?token=MU7tmUw0JivhBf6eA3IL5QtO3"
+```
+
 ## Endpoints
 
-Os exemplos abaixo usam `http://localhost:85/API` (servidor embutido do PHP). Se estiver rodando via Apache/XAMPP, troque pela sua URL (ex: `http://localhost:85/API/`).
+Os exemplos abaixo usam `http://localhost:85/API` (servidor embutido do PHP) e omitem o `token` por brevidade — lembre de incluir `&token=SEU_TOKEN` (ou `?token=...` se não houver outros parâmetros) em cada chamada real. Se estiver rodando via Apache/XAMPP, troque pela sua URL.
 
 ### `GET /feriado`
 
@@ -140,7 +148,7 @@ Toda resposta de erro segue `{ "erro": "mensagem" }`.
 2. **File → Import** (ou botão **Import** no canto superior esquerdo).
 3. Selecione o arquivo `postman_collection.json` (raiz deste projeto).
 4. A coleção **"API Feriados BR"** aparece na barra lateral, já com todos os endpoints e alguns casos de erro prontos para rodar.
-5. Confira a variável de coleção `baseUrl` (clique nos "..." da coleção → **Edit** → aba **Variables**) — troque para `http://localhost:85/API` (servidor embutido) ou `http://localhost:85/API/API` (Apache/XAMPP), conforme como estiver rodando.
+5. Confira as variáveis de coleção `baseUrl` e `token` (clique nos "..." da coleção → **Edit** → aba **Variables**) — ajuste `baseUrl` conforme como estiver rodando, e `token` deve bater com `API_TOKEN` (`src/config.php`). O token já é enviado automaticamente como query param em toda requisição (configurado na aba **Authorization** da coleção).
 6. Com o servidor rodando, clique em qualquer request → **Send**.
 
 ### Opção 2: montar manualmente
