@@ -18,8 +18,6 @@ function responderJson(int $status, $body): void
     echo json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 }
 
-// Remove o prefixo do diretório do front controller, para funcionar tanto na
-// raiz do host quanto num subdiretório (ex: DocumentRoot != php/public).
 $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
 if ($basePath !== '' && strpos($path, $basePath) === 0) {
