@@ -8,39 +8,86 @@ git submodule update --init --recursive
 
 API que responde se uma data é feriado no Brasil — nacional, estadual, municipal e ponto facultativo. Dados locais (`feriados-brasil/dados`), sem chamada externa. Cobertura: **2010–2026**.
 
+PHP puro, sem framework e sem Composer.
+
 ## Requisitos
 
-- Node.js 18+ (testado em v22)
+- PHP 7.4+ (compatível com 8.x)
+- Extensões `intl` e `mbstring` habilitadas
+- Apache com `mod_rewrite` (ou Nginx — ver seção abaixo)
+
+## Estrutura
+
+```
+public/
+  index.php    # front controller — todas as rotas passam por aqui
+  .htaccess    # reescreve tudo para index.php (Apache)
+src/
+  routes.php
+  lib/          # Datas.php, Normalize.php
+  data/         # Paths.php, Feriados.php, Localizacao.php
+```
+
+O servidor web (Apache/Nginx) deve apontar para a pasta `public/`.
 
 ## Instalar e rodar
 
+### Opção 1: servidor embutido do PHP (rápido, sem configurar nada)
+
 ```bash
 cd API
-npm install
-npm start
-```
-
-Servidor sobe em `http://localhost:3000`. Log de boot mostra estados/municípios carregados e intervalo de anos disponível.
-
-Porta customizada:
-
-```bash
-PORT=4000 npm start
-```
-
-Modo dev (reinicia sozinho ao salvar arquivo):
-
-```bash
-npm run dev
+php -S localhost:8000 -t public public/index.php
 ```
 
 Testar rápido se subiu:
 
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:8000/health
+```
+
+### Opção 2: Apache (XAMPP)
+
+1. Copie a pasta do projeto para `C:\xampp\htdocs\API`.
+2. Confirme que `mod_rewrite` está habilitado e que a pasta tem `AllowOverride All` (no XAMPP isso já vem configurado por padrão para `htdocs`).
+3. Para acessar por uma URL limpa (`http://localhost:85/API/...` em vez de `http://localhost:85/API/public/...`), adicione em `C:\xampp\apache\conf\extra\httpd-vhosts.conf`:
+
+   ```apache
+   Alias /API "C:/xampp/htdocs/API/public"
+   <Directory "C:/xampp/htdocs/API/public">
+       AllowOverride All
+       Require all granted
+   </Directory>
+   ```
+
+4. Reinicie o Apache pelo painel do XAMPP.
+5. Testar: `curl http://localhost:85/API/health` (ajuste a porta conforme o `Listen` do seu `httpd.conf`).
+
+### Opção 3: Nginx
+
+Sem `.htaccess` (Nginx não usa), a reescrita fica no bloco `server`:
+
+```nginx
+server {
+    listen 80;
+    server_name feriados.local;
+    root /caminho/para/API/public;
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/php-fpm.sock; # ajuste pro seu socket/porta do PHP-FPM
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+}
 ```
 
 ## Endpoints
+
+Os exemplos abaixo usam `http://localhost:8000` (servidor embutido do PHP). Se estiver rodando via Apache/XAMPP, troque pela sua URL (ex: `http://localhost:85/API`).
 
 ### `GET /feriado`
 
@@ -55,7 +102,7 @@ Responde se uma data específica é feriado.
 Exemplo (Porto Alegre/RS):
 
 ```bash
-curl "http://localhost:3000/feriado?data=2026-02-02&uf=RS&municipio=4314902"
+curl "http://localhost:8000/feriado?data=2026-02-02&uf=RS&municipio=4314902"
 ```
 
 ```json
@@ -76,13 +123,13 @@ curl "http://localhost:3000/feriado?data=2026-02-02&uf=RS&municipio=4314902"
 Também aceita nome em vez do código IBGE (exige `uf` junto pra desambiguar):
 
 ```bash
-curl "http://localhost:3000/feriado?data=2026-02-02&uf=RS&municipio=Porto Alegre"
+curl "http://localhost:8000/feriado?data=2026-02-02&uf=RS&municipio=Porto Alegre"
 ```
 
 Feriado estadual do RS (Revolução Farroupilha, 20/09):
 
 ```bash
-curl "http://localhost:3000/feriado?data=2026-09-20&uf=RS"
+curl "http://localhost:8000/feriado?data=2026-09-20&uf=RS"
 ```
 
 ### `GET /feriados/:ano`
@@ -90,8 +137,8 @@ curl "http://localhost:3000/feriado?data=2026-09-20&uf=RS"
 Lista todos os feriados do ano para o local informado (mesmos params `uf`/`municipio` da rota acima).
 
 ```bash
-curl "http://localhost:3000/feriados/2026?uf=RS"
-curl "http://localhost:3000/feriados/2026?uf=RS&municipio=4314902"
+curl "http://localhost:8000/feriados/2026?uf=RS"
+curl "http://localhost:8000/feriados/2026?uf=RS&municipio=4314902"
 ```
 
 ### `GET /estados`
@@ -123,6 +170,7 @@ Toda resposta de erro segue `{ "erro": "mensagem" }`.
 - `feriado: true` considera nacional, estadual e municipal.
 - Ponto facultativo (Carnaval, Corpus Christi, véspera de feriado) **não conta como feriado** — vem separado em `pontoFacultativo` / `pontosFacultativos`.
 - Páscoa não consta na base local (cai sempre num domingo, sem efeito em dia útil) — por isso diverge da BrasilAPI, que a lista como nacional.
+- Sem processo persistente (diferente de um servidor Node), cada requisição PHP lê os JSONs do disco de novo — não muda nenhuma resposta, só o perfil de performance (leitura local é barata).
 
 ## Testando no Postman
 
@@ -132,14 +180,14 @@ Toda resposta de erro segue `{ "erro": "mensagem" }`.
 2. **File → Import** (ou botão **Import** no canto superior esquerdo).
 3. Selecione o arquivo `postman_collection.json` (raiz deste projeto).
 4. A coleção **"API Feriados BR"** aparece na barra lateral, já com todos os endpoints e alguns casos de erro prontos para rodar.
-5. Confira a variável de coleção `baseUrl` (clique nos "..." da coleção → **Edit** → aba **Variables**) — vem como `http://localhost:3000`; troque se estiver usando outra porta.
-6. Com o servidor rodando (`npm start`), clique em qualquer request → **Send**.
+5. Confira a variável de coleção `baseUrl` (clique nos "..." da coleção → **Edit** → aba **Variables**) — troque para `http://localhost:8000` (servidor embutido) ou `http://localhost:85/API` (Apache/XAMPP), conforme como estiver rodando.
+6. Com o servidor rodando, clique em qualquer request → **Send**.
 
 ### Opção 2: montar manualmente
 
 1. **New → HTTP Request**.
 2. Método `GET`.
-3. URL: `http://localhost:3000/feriado`.
+3. URL: `http://localhost:8000/feriado`.
 4. Aba **Params**, adicione:
    - `data` = `2026-02-02`
    - `uf` = `RS` (opcional)
