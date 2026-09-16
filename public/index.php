@@ -6,6 +6,7 @@ require __DIR__ . '/../src/data/Paths.php';
 require __DIR__ . '/../src/lib/Normalize.php';
 require __DIR__ . '/../src/lib/Datas.php';
 require __DIR__ . '/../src/data/Feriados.php';
+require __DIR__ . '/../src/data/Comemorativas.php';
 require __DIR__ . '/../src/data/Localizacao.php';
 require __DIR__ . '/../src/routes.php';
 

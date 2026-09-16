@@ -109,6 +109,40 @@ function despachar(string $method, string $path, array $query, callable $respond
         return true;
     }
 
+    if ($method === 'GET' && $path === '/proximos') {
+        $local = lerLocal($query);
+        if (!$local['ok']) {
+            $responder($local['status'], ['erro' => $local['erro']]);
+            return true;
+        }
+
+        $limite = isset($query['limite']) ? (int) $query['limite'] : 5;
+        if ($limite < 1 || $limite > 50) {
+            $responder(400, ['erro' => "Parâmetro 'limite' deve ser um inteiro entre 1 e 50."]);
+            return true;
+        }
+
+        $incluirComemorativas = isset($query['comemorativas']) && $query['comemorativas'] !== '0';
+
+        $hoje = (new DateTimeImmutable('now', new DateTimeZone('America/Sao_Paulo')))->format('Y-m-d');
+
+        $eventos = proximosFeriados($hoje, $local['local'], $limite);
+        if ($incluirComemorativas) {
+            array_push($eventos, ...proximasComemorativas($hoje, $limite));
+            usort($eventos, fn(array $a, array $b): int => $a['data'] <=> $b['data']);
+        }
+        $eventos = array_slice($eventos, 0, $limite);
+        $eventos = array_map(fn(array $e) => $e + ['diaDaSemana' => diaDaSemana($e['data'])], $eventos);
+
+        $responder(200, [
+            'de' => $hoje,
+            'local' => descreverLocal($local['local']),
+            'total' => count($eventos),
+            'proximos' => $eventos,
+        ]);
+        return true;
+    }
+
     if ($method === 'GET' && $path === '/estados') {
         $responder(200, listarEstados());
         return true;

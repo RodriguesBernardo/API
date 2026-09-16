@@ -164,6 +164,23 @@ function feriadosNaData(string $iso, int $ano, array $local): array
     return aplicaveis($lista, $local);
 }
 
+/** Próximos feriados aplicáveis ao local a partir de (e incluindo) $deIso, ordenados por data. */
+function proximosFeriados(string $deIso, array $local, int $limite): array
+{
+    $ano = (int) substr($deIso, 0, 4);
+    $eventos = array_values(array_filter(
+        feriadosDoAno($ano, $local),
+        fn(array $f) => $f['data'] >= $deIso
+    ));
+
+    while (count($eventos) < $limite && anoSuportado($ano + 1)) {
+        $ano++;
+        array_push($eventos, ...feriadosDoAno($ano, $local));
+    }
+
+    return array_slice($eventos, 0, $limite);
+}
+
 function anosEmCache(): array
 {
     $anos = array_keys(indicePorAnoCache());

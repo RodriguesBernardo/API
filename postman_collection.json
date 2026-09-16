@@ -166,6 +166,51 @@
       }
     },
     {
+      "name": "Próximos feriados (Porto Alegre)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/proximos?uf=RS&municipio=4314902&limite=5",
+          "host": ["{{baseUrl}}"],
+          "path": ["proximos"],
+          "query": [
+            { "key": "uf", "value": "RS" },
+            { "key": "municipio", "value": "4314902" },
+            { "key": "limite", "value": "5" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Próximos feriados + comemorativas (Porto Alegre)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/proximos?uf=RS&municipio=4314902&limite=5&comemorativas=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["proximos"],
+          "query": [
+            { "key": "uf", "value": "RS" },
+            { "key": "municipio", "value": "4314902" },
+            { "key": "limite", "value": "5" },
+            { "key": "comemorativas", "value": "1" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Erro - limite fora do intervalo",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/proximos?limite=0",
+          "host": ["{{baseUrl}}"],
+          "path": ["proximos"],
+          "query": [{ "key": "limite", "value": "0" }]
+        }
+      }
+    },
+    {
       "name": "Lista de estados",
       "request": {
         "method": "GET",

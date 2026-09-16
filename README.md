@@ -109,6 +109,34 @@ curl "http://localhost:85/API/feriados/2026?uf=RS"
 curl "http://localhost:85/API/feriados/2026?uf=RS&municipio=4314902"
 ```
 
+### `GET /proximos`
+
+Lista os próximos feriados a partir de hoje, para o local informado (mesmos params `uf`/`municipio` das rotas acima).
+
+| Query param | Obrigatório | Descrição |
+|---|---|---|
+| `uf` | não | Sigla do estado (ex: `SP`). Sem ela, só considera nacional |
+| `municipio` | não | Código IBGE ou nome do município. Nome exige `uf` junto |
+| `limite` | não | Quantidade de eventos a retornar. Inteiro entre 1 e 50 (padrão: 5) |
+| `comemorativas` | não | `1` inclui datas comemorativas (Dia das Mães, etc.) misturadas na lista, ordenadas por data junto com os feriados. Padrão: não inclui |
+
+```bash
+curl "http://localhost:85/API/proximos?uf=RS&municipio=4314902&limite=5"
+```
+
+```json
+{
+  "de": "2026-09-16",
+  "local": { "uf": "RS", "municipio": "Porto Alegre", "codigoIbge": 4314902 },
+  "total": 5,
+  "proximos": [
+    { "data": "2026-09-20", "nome": "Proc. República Rio Grandense", "tipo": "estadual", "uf": "RS", "codigoIbge": null, "diaDaSemana": "domingo" }
+  ]
+}
+```
+
+Se o limite pedido ultrapassar o fim do intervalo suportado (ex.: pedir 15 em dezembro/2026, sem dados de 2027 ainda), a rota devolve o que tiver disponível — `total` fica menor que `limite`, sem erro.
+
 ### `GET /estados`
 
 Lista os 27 estados (sigla, nome, região).
@@ -132,6 +160,7 @@ Toda resposta de erro segue `{ "erro": "mensagem" }`.
 | UF inválida | 400 |
 | Município não encontrado | 400 |
 | `municipio` por nome sem `uf` | 400 |
+| `limite` fora de 1–50 | 400 |
 
 ## Sobre os dados
 
@@ -179,6 +208,9 @@ Testado e conferido contra o servidor local (todos batendo com o esperado):
 | Lista de feriados do ano (RS todo) | `GET /feriados/2026?uf=RS` | `200`, `total: 22` (nacional + estadual, sem filtrar município) |
 | Lista de feriados do ano (Porto Alegre) | `GET /feriados/2026?uf=RS&municipio=4314902` | `200`, `total: 25` (inclui os municipais de POA) |
 | Lista de municípios do RS | `GET /municipios?uf=RS` | `200`, `total: 497` |
+| Próximos feriados (Porto Alegre) | `GET /proximos?uf=RS&municipio=4314902&limite=5` | `200`, 5 feriados a partir de hoje, ordenados por data |
+| Próximos feriados + comemorativas | `GET /proximos?uf=RS&municipio=4314902&limite=5&comemorativas=1` | `200`, lista mesclada e ordenada, com itens `tipo: "comemorativa"` |
+| Próximos feriados, limite inválido | `GET /proximos?limite=0` | `400`, `"erro":"Parâmetro 'limite' deve ser um inteiro entre 1 e 50."` |
 | Data inválida | `GET /feriado?data=2026-13-40` | `400`, corpo `{"erro": "..."}` |
 | Ano fora do intervalo | `GET /feriado?data=2030-01-01` | `404` |
 | UF inválida | `GET /feriado?data=2026-01-01&uf=XX` | `400` |

@@ -9,3 +9,4 @@ const DADOS = RAIZ . '/feriados-brasil/dados';
 
 const DIR_FERIADOS = DADOS . '/feriados';
 const DIR_LOCALIZACAO = DADOS . '/localizacao';
+const DIR_COMEMORATIVAS = DADOS . '/comemorativas';
