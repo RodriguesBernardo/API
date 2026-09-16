@@ -1,6 +1,9 @@
 # Link do GitHub que que peguei o feriados-brasil
 https://github.com/joaopbini/feriados-brasil/tree/master
 
+## Para baixar o repositório feriados-brasil
+git submodule update --init --recursive
+
 # API de Feriados BR
 
 API que responde se uma data é feriado no Brasil — nacional, estadual, municipal e ponto facultativo. Dados locais (`feriados-brasil/dados`), sem chamada externa. Cobertura: **2010–2026**.
